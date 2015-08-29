@@ -24,11 +24,20 @@ class MovieDetailsViewController: UIViewController {
         let ratings = movie["ratings"] as! NSDictionary
         let criticsScore = ratings["critics_score"] as! Int
         let audienceScore = ratings["audience_score"] as! Int
-        
+        var urlStr = movie.valueForKeyPath("posters.thumbnail") as! String
+            
         titleLabel.text = "\(title) (\(year))"
         ratingLabel.text = movie["mpaa_rating"] as? String
         synopsisLabel.text = movie["synopsis"] as? String
         scoreLabel.text = "Critics score: \(criticsScore), Audience score: \(audienceScore)"
+        
+        var range = urlStr.rangeOfString(".*cloudfront.net/", options: .RegularExpressionSearch)
+        if let range = range {
+            urlStr = urlStr.stringByReplacingCharactersInRange(range, withString: "https://content6.flixster.com/")
+        }
+        if let url = NSURL(string: urlStr) {
+            bgImageView.setImageWithURL(url)
+        }
 
         // Do any additional setup after loading the view.
     }
