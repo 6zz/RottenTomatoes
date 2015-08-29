@@ -7,9 +7,12 @@
 //
 
 import UIKit
+import AFNetworking
 
-class ListingViewController: UIViewController {
+class ListingViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     var movies: NSArray?
+    
+    @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,15 +24,41 @@ class ListingViewController: UIViewController {
             var responseDictionary = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as! NSDictionary
 
             self.movies = responseDictionary["movies"] as? NSArray
-//            self.tableView.reloadData()
             
-            NSLog("response: \(self.movies)")
+            self.tableView.estimatedRowHeight = 100
+            self.tableView.rowHeight = UITableViewAutomaticDimension
+            self.tableView.reloadData()
         }
+        
+        tableView.dataSource = self
+        tableView.delegate = self
+        
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("com.tumblr.MovieCell", forIndexPath: indexPath) as! MovieCell
+        
+        if let movies = movies {
+            let movie: AnyObject = movies[indexPath.row]
+            if let url = NSURL(string: movie.valueForKeyPath("posters.thumbnail") as! String) {
+                cell.movieImageView.setImageWithURL(url)
+            }
+        }
+        
+        return cell
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if let movies = movies {
+            return movies.count
+        } else {
+            return 0
+        }
     }
     
 
