@@ -54,7 +54,9 @@ class ListingViewController: UIViewController, UITableViewDelegate, UITableViewD
                 let attributedSummary = NSMutableAttributedString(string: rating, attributes: [NSFontAttributeName : UIFont.boldSystemFontOfSize(13.0)])
                 
                 if let synopsis = movie.valueForKeyPath("synopsis") as? String {
-                    let attributedSynopsis = NSMutableAttributedString(string: "  \(synopsis)", attributes: [NSFontAttributeName : UIFont.systemFontOfSize(13.0)])
+                    let attributedSynopsis = NSMutableAttributedString(string: "  \(synopsis)", attributes: [NSFontAttributeName : UIFont.systemFontOfSize(13.0),
+                        NSForegroundColorAttributeName : UIColor.lightTextColor()
+                        ])
                     
                     attributedSummary.appendAttributedString(attributedSynopsis)
                     cell.summaryLabel.attributedText = attributedSummary
