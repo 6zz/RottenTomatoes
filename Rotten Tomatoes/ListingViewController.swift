@@ -8,9 +8,11 @@
 
 import UIKit
 import AFNetworking
+import SwiftLoader
 
 class ListingViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     var movies: NSArray?
+    var refreshControl: UIRefreshControl!
     
     @IBOutlet weak var tableView: UITableView!
     
@@ -18,8 +20,18 @@ class ListingViewController: UIViewController, UITableViewDelegate, UITableViewD
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        var refreshControl = UIRefreshControl()
         var url = NSURL(string: "https://gist.githubusercontent.com/timothy1ee/d1778ca5b944ed974db0/raw/489d812c7ceeec0ac15ab77bf7c47849f2d1eb2b/gistfile1.json")!
         var request = NSURLRequest(URL: url)
+        SwiftLoader.show(animated: true)
+
+        tableView.dataSource = self
+        tableView.delegate = self
+        
+        refreshControl.addTarget(self, action: "loadMore", forControlEvents: UIControlEvents.ValueChanged)
+        self.refreshControl = refreshControl
+        tableView.addSubview(refreshControl)
+        
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
             var responseDictionary = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as! NSDictionary
 
@@ -27,10 +39,9 @@ class ListingViewController: UIViewController, UITableViewDelegate, UITableViewD
             
             self.tableView.rowHeight = 102
             self.tableView.reloadData()
+            
+            SwiftLoader.hide()
         }
-        
-        tableView.dataSource = self
-        tableView.delegate = self
         
     }
 
@@ -77,7 +88,29 @@ class ListingViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    }
 
+    func loadMore() {
+        NSLog("loading more")
+        var url = NSURL(string: "https://gist.githubusercontent.com/timothy1ee/d1778ca5b944ed974db0/raw/489d812c7ceeec0ac15ab77bf7c47849f2d1eb2b/gistfile1.json")!
+        var request = NSURLRequest(URL: url)
+        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+            var responseDictionary = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as! NSDictionary
+         
+            var more = responseDictionary["movies"] as? NSArray
+            
+            if let more = more {
+                var size = more.count
+                var lastTwo: NSArray =  more.subarrayWithRange(NSMakeRange(size - 2, 2))
+                self.movies = lastTwo.arrayByAddingObjectsFromArray(self.movies! as [AnyObject])
+                self.tableView.reloadData()
+            }
+            self.refreshControl.endRefreshing()
+        }
+    }
+    
     /*
     // MARK: - Navigation
 
