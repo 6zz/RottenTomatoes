@@ -25,8 +25,7 @@ class ListingViewController: UIViewController, UITableViewDelegate, UITableViewD
 
             self.movies = responseDictionary["movies"] as? NSArray
             
-            self.tableView.estimatedRowHeight = 100
-            self.tableView.rowHeight = UITableViewAutomaticDimension
+            self.tableView.rowHeight = 102
             self.tableView.reloadData()
         }
         
@@ -47,6 +46,21 @@ class ListingViewController: UIViewController, UITableViewDelegate, UITableViewD
             let movie: AnyObject = movies[indexPath.row]
             if let url = NSURL(string: movie.valueForKeyPath("posters.thumbnail") as! String) {
                 cell.movieImageView.setImageWithURL(url)
+            }
+            if let title = movie.valueForKeyPath("title") as? String {
+                cell.titleLabel.text = title
+            }
+            if let rating = movie.valueForKeyPath("mpaa_rating") as? String {
+                let attributedSummary = NSMutableAttributedString(string: rating, attributes: [NSFontAttributeName : UIFont.boldSystemFontOfSize(13.0)])
+                
+                if let synopsis = movie.valueForKeyPath("synopsis") as? String {
+                    let attributedSynopsis = NSMutableAttributedString(string: "  \(synopsis)", attributes: [NSFontAttributeName : UIFont.systemFontOfSize(13.0)])
+                    
+                    attributedSummary.appendAttributedString(attributedSynopsis)
+                    cell.summaryLabel.attributedText = attributedSummary
+                } else {
+                    cell.summaryLabel.text = rating
+                }
             }
         }
         
