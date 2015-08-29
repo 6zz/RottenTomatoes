@@ -82,10 +82,17 @@ class ListingViewController: UIViewController, UITableViewDelegate, UITableViewD
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
+    */
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
+        let cell = sender as! UITableViewCell
+        let indexPath = tableView.indexPathForCell(cell)!
+        let movie: AnyObject = movies![indexPath.row]
+        let movieDetailsViewController = segue.destinationViewController as! MovieDetailsViewController
+        
+        movieDetailsViewController.movie = movie as! NSDictionary
     }
-    */
+
 
 }
