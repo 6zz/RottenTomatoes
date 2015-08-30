@@ -15,11 +15,13 @@ class ListingViewController: UIViewController, UITableViewDelegate, UITableViewD
     var refreshControl: UIRefreshControl!
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var ErrorView: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        ErrorView.hidden = true
         var refreshControl = UIRefreshControl()
         var url = NSURL(string: "https://gist.githubusercontent.com/timothy1ee/d1778ca5b944ed974db0/raw/489d812c7ceeec0ac15ab77bf7c47849f2d1eb2b/gistfile1.json")!
         var request = NSURLRequest(URL: url)
@@ -33,12 +35,17 @@ class ListingViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.addSubview(refreshControl)
         
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-            var responseDictionary = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as! NSDictionary
+            if let error = error {
+                self.ErrorView.hidden = false
+            } else {
+                var responseDictionary = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as! NSDictionary
 
-            self.movies = responseDictionary["movies"] as? NSArray
-            
-            self.tableView.rowHeight = 102
-            self.tableView.reloadData()
+                self.movies = responseDictionary["movies"] as? NSArray
+                
+                self.tableView.rowHeight = 102
+                self.tableView.reloadData()
+                self.ErrorView.hidden = true
+            }
             
             SwiftLoader.hide()
         }
@@ -98,7 +105,7 @@ class ListingViewController: UIViewController, UITableViewDelegate, UITableViewD
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
             
             if let error = error {
-                NSLog("error");
+                self.ErrorView.hidden = false
             } else {
                 var responseDictionary = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as! NSDictionary
              
@@ -110,6 +117,7 @@ class ListingViewController: UIViewController, UITableViewDelegate, UITableViewD
                     self.movies = lastTwo.arrayByAddingObjectsFromArray(self.movies! as [AnyObject])
                     self.tableView.reloadData()
                 }
+                self.ErrorView.hidden = true
             }
             self.refreshControl.endRefreshing()
         }
