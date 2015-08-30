@@ -93,19 +93,23 @@ class ListingViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
 
     func loadMore() {
-        NSLog("loading more")
         var url = NSURL(string: "https://gist.githubusercontent.com/timothy1ee/d1778ca5b944ed974db0/raw/489d812c7ceeec0ac15ab77bf7c47849f2d1eb2b/gistfile1.json")!
         var request = NSURLRequest(URL: url)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-            var responseDictionary = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as! NSDictionary
-         
-            var more = responseDictionary["movies"] as? NSArray
             
-            if let more = more {
-                var size = more.count
-                var lastTwo: NSArray =  more.subarrayWithRange(NSMakeRange(size - 2, 2))
-                self.movies = lastTwo.arrayByAddingObjectsFromArray(self.movies! as [AnyObject])
-                self.tableView.reloadData()
+            if let error = error {
+                NSLog("error");
+            } else {
+                var responseDictionary = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as! NSDictionary
+             
+                var more = responseDictionary["movies"] as? NSArray
+                
+                if let more = more {
+                    var size = more.count
+                    var lastTwo: NSArray =  more.subarrayWithRange(NSMakeRange(size - 2, 2))
+                    self.movies = lastTwo.arrayByAddingObjectsFromArray(self.movies! as [AnyObject])
+                    self.tableView.reloadData()
+                }
             }
             self.refreshControl.endRefreshing()
         }
