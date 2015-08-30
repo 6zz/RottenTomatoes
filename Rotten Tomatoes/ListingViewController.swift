@@ -63,7 +63,11 @@ class ListingViewController: UIViewController, UITableViewDelegate, UITableViewD
         if let movies = movies {
             let movie: AnyObject = movies[indexPath.row]
             if let url = NSURL(string: movie.valueForKeyPath("posters.thumbnail") as! String) {
+                cell.movieImageView.alpha = 0
                 cell.movieImageView.setImageWithURL(url)
+                UIView.animateWithDuration(1, animations: {
+                    cell.movieImageView.alpha = 1
+                })
             }
             if let title = movie.valueForKeyPath("title") as? String {
                 cell.titleLabel.text = title

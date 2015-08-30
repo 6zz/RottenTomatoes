@@ -37,7 +37,11 @@ class MovieDetailsViewController: UIViewController {
             urlStr = urlStr.stringByReplacingCharactersInRange(range, withString: "https://content6.flixster.com/")
         }
         if let url = NSURL(string: urlStr) {
+            bgImageView.alpha = 0
             bgImageView.setImageWithURL(url, placeholderImage: lowresImage)
+            UIImageView.animateWithDuration(1, animations: {
+                self.bgImageView.alpha = 1
+            })
         }
 
         // Do any additional setup after loading the view.
