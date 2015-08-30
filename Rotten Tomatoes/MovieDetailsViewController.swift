@@ -25,6 +25,7 @@ class MovieDetailsViewController: UIViewController {
         let criticsScore = ratings["critics_score"] as! Int
         let audienceScore = ratings["audience_score"] as! Int
         var urlStr = movie.valueForKeyPath("posters.thumbnail") as! String
+        let lowresImage = UIImage(data: NSData(contentsOfURL: NSURL(string: urlStr)!)!)
             
         titleLabel.text = "\(title) (\(year))"
         ratingLabel.text = movie["mpaa_rating"] as? String
@@ -36,7 +37,7 @@ class MovieDetailsViewController: UIViewController {
             urlStr = urlStr.stringByReplacingCharactersInRange(range, withString: "https://content6.flixster.com/")
         }
         if let url = NSURL(string: urlStr) {
-            bgImageView.setImageWithURL(url)
+            bgImageView.setImageWithURL(url, placeholderImage: lowresImage)
         }
 
         // Do any additional setup after loading the view.
