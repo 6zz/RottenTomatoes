@@ -10,7 +10,8 @@ import UIKit
 import AFNetworking
 import SwiftLoader
 
-class ListingViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ListingViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+    var fullListings: NSArray?
     var movies: NSArray?
     var refreshControl: UIRefreshControl!
     
@@ -42,6 +43,8 @@ class ListingViewController: UIViewController, UITableViewDelegate, UITableViewD
                 var responseDictionary = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as! NSDictionary
 
                 self.movies = responseDictionary["movies"] as? NSArray
+                
+                self.fullListings = self.movies
                 
                 self.tableView.rowHeight = 102
                 self.tableView.reloadData()
@@ -128,6 +131,25 @@ class ListingViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        search(searchText)
+    }
+    
+    func search(needle: String) {
+        if needle.isEmpty {
+            self.movies = self.fullListings
+        } else {
+            self.movies = self.fullListings?.filteredArrayUsingPredicate(NSPredicate(format:"%K CONTAINS %@", "title", needle))
+        }
+        self.tableView.reloadData()
+    }
+    
+    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+        searchBar.text = ""
+        searchBar.resignFirstResponder()
+        search("")
+    }
+    
     /*
     // MARK: - Navigation
 
@@ -142,6 +164,10 @@ class ListingViewController: UIViewController, UITableViewDelegate, UITableViewD
         let movieDetailsViewController = segue.destinationViewController as! MovieDetailsViewController
         
         movieDetailsViewController.movie = movie as! NSDictionary
+        
+        self.movieSearchBar.text = ""
+        self.search("")
+        self.movieSearchBar.resignFirstResponder()
     }
 
 
