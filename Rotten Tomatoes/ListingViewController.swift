@@ -16,6 +16,7 @@ class ListingViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var ErrorView: UIView!
+    @IBOutlet weak var movieSearchBar: UISearchBar!
     
     override func viewDidLoad() {
         super.viewDidLoad()
