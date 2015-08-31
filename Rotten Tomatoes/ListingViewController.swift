@@ -120,9 +120,15 @@ class ListingViewController: UIViewController, UITableViewDelegate, UITableViewD
                 var more = responseDictionary["movies"] as? NSArray
                 
                 if let more = more {
-                    var size = more.count
-                    var lastTwo: NSArray =  more.subarrayWithRange(NSMakeRange(size - 2, 2))
-                    self.movies = lastTwo.arrayByAddingObjectsFromArray(self.movies! as [AnyObject])
+                    if self.movies == nil {
+                        self.movies = more
+                        self.fullListings = more
+                    } else {
+                        var size = more.count
+                        var lastTwo: NSArray =  more.subarrayWithRange(NSMakeRange(size - 2, 2))
+                        self.movies = lastTwo.arrayByAddingObjectsFromArray(self.movies! as [AnyObject])
+                        self.fullListings = self.movies
+                    }
                     self.tableView.reloadData()
                 }
                 self.ErrorView.hidden = true
